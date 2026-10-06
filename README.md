@@ -59,3 +59,15 @@ Nao e usada por nenhuma box diretamente; e so o ponto de partida.
 Este repo e publico. NUNCA coloque aqui senha de banco, o `config.ini` do
 servidor, nem credencial nenhuma. O `config.json` da TV so precisa da URL do
 webserver — nada de senha.
+
+## android/ — código-fonte do app
+
+O projeto Android (APK que roda nas boxes) fica em `android/`.
+É um app WebView em quiosque que:
+- lista as pastas deste repo (via GitHub Contents API) pra você escolher a TV;
+- baixa o `config.json` + `index.html` da pasta escolhida;
+- gira a tela conforme `orientacao` (paisagem/retrato);
+- confere o `version.txt` da pasta de tempos em tempos e atualiza sozinho (OTA).
+
+Build: abrir `android/` no Android Studio e Build APK, ou `./gradlew assembleDebug`.
+O APK compilado NÃO fica versionado aqui (sai em `android/app/build/outputs/apk/`).

@@ -1,0 +1,25 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'br.com.wr.tvprecos'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "br.com.wr.tvprecos"
+        minSdk 21          // Android 5.0+ (TLS 1.2 ok pra falar com o GitHub)
+        targetSdk 34
+        versionCode 2
+        versionName "2.0"
+    }
+
+    buildTypes {
+        release { minifyEnabled false }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies { }

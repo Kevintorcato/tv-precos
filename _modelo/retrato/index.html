@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Tabela de Precos</title>
+<style>
+/* LAYOUT RETRATO (TV em pe). CSS conservador (sem grid/variaveis) pra box velha. */
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:100%; overflow:hidden; background:#0e1116; font-family:Arial, Helvetica, sans-serif; -webkit-text-size-adjust:none; }
+#tela { width:100%; height:100%; display:flex; flex-direction:column; }
+
+/* topo mais alto, em duas linhas, porque a tela e estreita */
+#topo { height:9vh; background:#c81d25; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 2vw; border-bottom:0.4vh solid #ffd400; }
+#titulo { font-size:3.6vh; font-weight:bold; text-transform:uppercase; letter-spacing:0.05vw; }
+#relogio { display:flex; gap:2vw; align-items:baseline; margin-top:0.3vh; }
+#hora { font-size:2.6vh; font-weight:bold; }
+#data { font-size:1.8vh; text-transform:uppercase; opacity:0.9; }
+
+#corpo { flex:1; padding:1vh 2vw; overflow:hidden; position:relative; }
+table.lista { width:100%; border-collapse:collapse; }
+
+/* em retrato cabe mais linha vertical: fontes um pouco menores em vh */
+tr.cat td { background:#1b2430; color:#ffd400; font-size:2.6vh; font-weight:bold; text-transform:uppercase; padding:0.8vh 2vw; letter-spacing:0.04vw; border-bottom:0.3vh solid #ffd400; }
+tr.prod td { font-size:2.7vh; padding:0.85vh 2vw; border-bottom:0.15vh solid #222c38; color:#f2f4f7; }
+tr.prod:nth-child(even) td { background:#141922; }
+td.nome { width:64%; }
+td.cifra { width:9%; text-align:right; color:#9aa6b2; font-size:1.9vh; vertical-align:middle; }
+td.preco { width:18%; text-align:right; font-weight:bold; font-size:3.3vh; color:#fff; white-space:nowrap; }
+td.medida { width:9%; text-align:left; color:#9aa6b2; font-size:1.8vh; padding-left:1vw; }
+tr.promo td { background:#ffd400 !important; color:#111 !important; }
+tr.promo td.preco { color:#c81d25 !important; }
+tr.promo td.cifra, tr.promo td.medida { color:#5a4b00 !important; }
+
+#rodape { height:4vh; background:#1b2430; color:#8a97a5; display:flex; align-items:center; justify-content:space-between; padding:0 3vw; font-size:1.7vh; }
+#statusfonte { color:#5a6b7a; }
+.online { color:#38d16a; }
+.offline { color:#ff6b6b; }
+#paginas { font-size:1.7vh; }
+</style>
+</head>
+<body>
+<div id="tela">
+  <div id="topo">
+    <div id="titulo">Ofertas do Dia</div>
+    <div id="relogio"><span id="hora">--:--</span><span id="data">--</span></div>
+  </div>
+  <div id="corpo"><table class="lista" id="lista"><tbody id="corpolista"></tbody></table></div>
+  <div id="rodape"><div id="statusfonte">iniciando...</div><div id="paginas"></div></div>
+</div>
+<script>
+var CFG = { server:"http://10.6.2.253:9001/tv", cod_tv:1, titulo:"Ofertas do Dia", refreshMs:45000, pageMs:12000 };
+if (window.TV_CONFIG) {
+  if (TV_CONFIG.server)  CFG.server  = TV_CONFIG.server;
+  if (TV_CONFIG.cod_tv)  CFG.cod_tv  = TV_CONFIG.cod_tv;
+  if (TV_CONFIG.titulo)  CFG.titulo  = TV_CONFIG.titulo;
+}
+document.getElementById('titulo').innerHTML = CFG.titulo;
+var MOCK = [
+  {categoria:"BOVINOS", produtos:["ALCATRA BOVINA KG","COSTELA DIANTEIRA C/OSSO KG","PATINHO BOVINO KG","CARNE MOIDA 1A KG"], valor:["39,90","24,90","42,50","29,90"], promocao:["0","1","0","0"], medida:["KG","KG","KG","KG"]},
+  {categoria:"AVES E SUINOS", produtos:["FILE DE PEITO KG","COXA E SOBRECOXA KG","LINGUICA TOSCANA KG","BISTECA SUINA KG"], valor:["17,90","11,90","19,90","21,90"], promocao:["0","1","0","0"], medida:["KG","KG","KG","KG"]},
+  {categoria:"HORTIFRUTI", produtos:["BANANA NANICA KG","TOMATE KG","BATATA LAVADA KG","CEBOLA KG","MACA FUJI KG"], valor:["4,99","6,90","5,49","4,29","8,90"], promocao:["1","0","0","0","0"], medida:["KG","KG","KG","KG","KG"]},
+  {categoria:"MERCEARIA", produtos:["ARROZ T1 5KG","FEIJAO CARIOCA 1KG","ACUCAR 1KG","OLEO SOJA 900ML","CAFE 500G"], valor:["24,90","7,49","4,19","6,99","15,90"], promocao:["0","0","0","1","0"], medida:["UN","UN","UN","UN","UN"]}
+];
+function xhrGet(url, ok, fail) {
+  try {
+    var x = new XMLHttpRequest();
+    x.open("GET", url, true); x.timeout = 8000;
+    x.onreadystatechange = function(){
+      if (x.readyState === 4) {
+        if (x.status >= 200 && x.status < 300) { try { ok(JSON.parse(x.responseText)); } catch(e){ fail(); } }
+        else { fail(); }
+      }
+    };
+    x.ontimeout = fail; x.onerror = fail; x.send();
+  } catch(e){ fail(); }
+}
+function dois(n){ return n < 10 ? "0"+n : ""+n; }
+var DIAS = ["DOMINGO","SEGUNDA","TERCA","QUARTA","QUINTA","SEXTA","SABADO"];
+var MESES = ["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
+function tickRelogio(){
+  var d = new Date();
+  document.getElementById('hora').innerHTML = dois(d.getHours())+":"+dois(d.getMinutes());
+  document.getElementById('data').innerHTML = DIAS[d.getDay()]+" "+dois(d.getDate())+" "+MESES[d.getMonth()];
+}
+function montarLinhas(dados){
+  var linhas = [];
+  for (var i=0; i<dados.length; i++){
+    var c = dados[i];
+    if (!c.produtos || !c.produtos.length) continue;
+    linhas.push({tipo:"cat", texto:c.categoria});
+    for (var j=0; j<c.produtos.length; j++){
+      linhas.push({tipo:"prod", nome:c.produtos[j], valor:c.valor?c.valor[j]:"", medida:c.medida?c.medida[j]:"", promo:c.promocao&&(c.promocao[j]=="1"||c.promocao[j]===1)});
+    }
+  }
+  return linhas;
+}
+function trCategoria(texto){ return '<tr class="cat"><td colspan="4">'+texto+'</td></tr>'; }
+function trProduto(p){
+  var cls = p.promo ? "prod promo" : "prod";
+  return '<tr class="'+cls+'"><td class="nome">'+p.nome+'</td><td class="cifra">R$</td><td class="preco">'+p.valor+'</td><td class="medida">'+p.medida+'</td></tr>';
+}
+var PAGINAS = []; var pagAtual = 0;
+function paginar(linhas){
+  PAGINAS = [];
+  var corpo = document.getElementById('corpo');
+  var alturaMax = corpo.clientHeight - 10;
+  var tbody = document.getElementById('corpolista');
+  var atual = []; tbody.innerHTML = "";
+  for (var i=0; i<linhas.length; i++){
+    var L = linhas[i];
+    var html = (L.tipo==="cat") ? trCategoria(L.texto) : trProduto(L);
+    tbody.innerHTML += html;
+    if (tbody.offsetHeight > alturaMax && atual.length > 0){ PAGINAS.push(atual.slice()); atual=[L]; tbody.innerHTML=html; }
+    else { atual.push(L); }
+  }
+  if (atual.length) PAGINAS.push(atual.slice());
+  if (!PAGINAS.length) PAGINAS = [[]];
+  if (pagAtual >= PAGINAS.length) pagAtual = 0;
+}
+function render(linhas){
+  var p = PAGINAS[pagAtual] || [];
+  var tbody = document.getElementById('corpolista');
+  var html = "";
+  for (var i=0; i<p.length; i++){ var L=p[i]; html += (L.tipo==="cat")?trCategoria(L.texto):trProduto(L); }
+  tbody.innerHTML = html;
+  document.getElementById('paginas').innerHTML = PAGINAS.length>1 ? ("Pag "+(pagAtual+1)+"/"+PAGINAS.length) : "";
+}
+var LINHAS = [];
+function carregar(){
+  var url = CFG.server + "/tabela/produtos.php?cod_tv=" + CFG.cod_tv;
+  xhrGet(url, function(dados){
+    LINHAS = montarLinhas(dados);
+    if (!LINHAS.length){ usarMock("servidor sem produtos"); return; }
+    marcarFonte(true, "ao vivo"); paginar(LINHAS); render(LINHAS);
+  }, function(){ usarMock("sem conexao com o servidor"); });
+}
+function usarMock(motivo){ LINHAS = montarLinhas(MOCK); marcarFonte(false, "EXEMPLO ("+motivo+")"); paginar(LINHAS); render(LINHAS); }
+function marcarFonte(online, txt){
+  var el = document.getElementById('statusfonte');
+  el.className = online ? "online" : "offline";
+  var d = new Date();
+  el.innerHTML = (online?"ao vivo":txt) + " · atualizado "+dois(d.getHours())+":"+dois(d.getMinutes());
+}
+function virarPagina(){ if (PAGINAS.length<=1) return; pagAtual=(pagAtual+1)%PAGINAS.length; render(LINHAS); }
+tickRelogio(); carregar();
+setInterval(tickRelogio, 1000);
+setInterval(carregar, CFG.refreshMs);
+setInterval(virarPagina, CFG.pageMs);
+window.onresize = function(){ if (LINHAS.length){ paginar(LINHAS); render(LINHAS); } };
+</script>
+</body>
+</html>

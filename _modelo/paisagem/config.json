@@ -1,0 +1,6 @@
+{
+  "server": "http://IP_DO_SERVIDOR:9001/tv",
+  "cod_tv": 1,
+  "titulo": "Titulo da TV",
+  "orientacao": "paisagem"
+}

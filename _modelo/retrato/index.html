@@ -6,52 +6,67 @@
 <title>WR Supermercado - Ofertas</title>
 <style>
 :root{--azul:#0b3fa8;--azul-esc:#082a73;--azul-txt:#0a2a66;--amarelo:#ffc400;--amarelo-claro:#ffd83a;--vermelho:#d81f26;}
+@font-face{font-family:'Pincel';src:url('https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/fonts/PermanentMarker.ttf') format('truetype');font-display:swap;}
+@keyframes pisca{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.1);}}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
 body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 #banner{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
-#banner img{width:72vw;background:#fff;border-radius:3vh;padding:4vh 4vw;box-shadow:0 1vh 4vh rgba(0,0,0,.35);}
-#banner .nota{color:#fff;font-size:3.4vw;margin-top:5vh;text-transform:uppercase;letter-spacing:.4vw;opacity:.9;}
-#banner .faixa{width:40vw;height:1vh;background:var(--amarelo);border-radius:1vh;margin-top:3vh;}
+#banner img{width:74vw;background:#fff;border-radius:3vw;padding:4vw;box-shadow:0 1vh 4vh rgba(0,0,0,.35);}
+#banner .nota{color:#fff;font-size:3.6vw;margin-top:4vh;text-transform:uppercase;letter-spacing:.4vw;opacity:.9;}
+#banner .faixa{width:46vw;height:1vh;background:var(--amarelo);border-radius:1vh;margin-top:3vh;}
 
-#painel{width:100%;height:100%;display:none;flex-direction:column;padding:2.8vh 3vw;}
-#topo{min-height:11vh;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:1.5vh 3vw;border-bottom:.9vh solid var(--amarelo);box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);border-radius:1.2vh 1.2vh 0 0;}
-#topo img{height:7vh;}
+#painel{width:100%;height:100%;display:none;flex-direction:column;padding:2.5vh 3vw;}
+#topo{min-height:8vh;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:1.5vh 3vw;border-bottom:.8vh solid var(--amarelo);box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);border-radius:1.5vw 1.5vw 0 0;}
+#topo img{height:7vw;}
 #relogio{text-align:right;color:var(--azul);line-height:1;}
-#hora{font-size:4vh;font-weight:bold;}
-#data{font-size:1.9vh;font-weight:bold;text-transform:uppercase;color:#4a6bbf;margin-top:.5vh;}
+#hora{font-size:5vw;font-weight:bold;}
+#data{font-size:2.2vw;font-weight:bold;text-transform:uppercase;color:#4a6bbf;margin-top:.5vh;}
 #corpo{flex:1;padding:2vh 0;overflow:hidden;position:relative;}
+
+/* TABELA (coluna unica) */
 #grade{display:flex;flex-direction:column;gap:1.4vh;transition:opacity .4s ease;}
-.catband{color:#fff;font-size:3vh;font-weight:bold;text-transform:uppercase;letter-spacing:.2vw;padding:.4vh 0 1vh;border-bottom:.35vh solid var(--amarelo);margin-top:.6vh;display:flex;align-items:center;gap:2vw;}
-.catband:before{content:"";width:2.4vw;height:3vh;background:var(--amarelo);border-radius:.5vh;}
-.card{width:100%;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:1.6vh;padding:1.8vh 4vw;display:flex;align-items:center;justify-content:space-between;box-shadow:0 .6vh 1.6vh rgba(0,0,0,.28);position:relative;overflow:hidden;}
-.card .nome{font-size:3.2vh;font-weight:bold;color:var(--azul-txt);line-height:1.1;flex:1;padding-right:3vw;text-transform:uppercase;}
+.catband{color:#fff;font-size:4.4vw;font-weight:bold;text-transform:uppercase;letter-spacing:.2vw;padding:.4vh 0 1vh;border-bottom:.35vh solid var(--amarelo);margin-top:.6vh;display:flex;align-items:center;gap:2vw;}
+.catband:before{content:"";width:2.4vw;height:4.4vw;background:var(--amarelo);border-radius:.5vw;}
+.card{width:100%;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:2vw;padding:1.8vh 4vw;display:flex;align-items:center;justify-content:space-between;box-shadow:0 .6vh 1.6vh rgba(0,0,0,.28);overflow:hidden;}
+.card .nome{font-size:4.4vw;font-weight:bold;color:var(--azul-txt);line-height:1.05;flex:1;padding-right:3vw;text-transform:uppercase;}
+.card .tag{display:inline-block;background:var(--vermelho);color:#fff;font-size:2.6vw;font-weight:900;padding:.1vh 1.5vw;border-radius:1vw;margin-right:1.5vw;vertical-align:middle;}
 .card .bloco{display:flex;align-items:baseline;white-space:nowrap;}
-.card .cifra{font-size:2.8vh;font-weight:bold;color:var(--vermelho);margin-right:.5vw;}
-.card .preco{font-size:5.6vh;font-weight:900;color:var(--vermelho);line-height:1;}
-.card .medida{font-size:2.3vh;font-weight:bold;color:#7a5c00;margin-left:1vw;align-self:flex-end;margin-bottom:.6vh;}
+.card .cifra{font-size:3.6vw;font-weight:bold;color:var(--vermelho);margin-right:.5vw;}
+.card .preco{font-size:7vw;font-weight:900;color:var(--vermelho);line-height:1;}
+.card .medida{font-size:2.8vw;font-weight:bold;color:#7a5c00;margin-left:1vw;align-self:flex-end;margin-bottom:.4vh;}
 .card.promo{background:linear-gradient(180deg,#ff2a33,#e60012);box-shadow:0 .6vh 2vh rgba(230,0,18,.5);}
-.card.promo .nome{color:#fff;}
-.card.promo .cifra,.card.promo .preco{color:#ffe14d;}
-.card.promo .medida{color:#ffe7a0;}
-.card.promo .selo{position:absolute;top:0;right:0;background:#ffe14d;color:#c00;font-size:2vh;font-weight:900;padding:.5vh 2.5vw;border-bottom-left-radius:1.2vh;letter-spacing:.1vw;}
-#rodape{min-height:5.5vh;background:var(--amarelo);display:flex;align-items:center;overflow:hidden;border-radius:0 0 1.2vh 1.2vh;}
-#ticker{white-space:nowrap;color:var(--azul);font-size:2.8vh;font-weight:bold;text-transform:uppercase;will-change:transform;}
-#pag{position:absolute;right:1vw;bottom:0;color:#cdd8f5;font-size:2vh;font-weight:bold;}
+.card.promo .nome{color:#fff;}.card.promo .tag{background:#ffe14d;color:#c00;}
+.card.promo .cifra,.card.promo .preco{color:#ffe14d;}.card.promo .medida{color:#ffe7a0;}
+
+/* OFERTA (cartao vertical amarelo) */
+#ofertas{display:none;height:100%;transition:opacity .4s ease;}
+.poster{height:100%;display:flex;align-items:center;justify-content:center;}
+.quad{width:90vw;max-width:90vw;min-height:62vh;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:3vw;box-shadow:0 1.2vh 4vh rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5vh 6vw;}
+.quad .sel{background:var(--vermelho);color:#fff;font-size:6vw;font-weight:900;padding:1vh 7vw;border-radius:8vw;text-transform:uppercase;letter-spacing:.3vw;margin-bottom:3vh;box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);animation:pisca 1.1s ease-in-out infinite;}
+.quad .nome{color:#111;font-size:9vw;line-height:1.02;text-transform:uppercase;font-family:'Pincel','Arial Black',Arial,sans-serif;word-break:break-word;}
+.quad .preco{margin-top:2vh;display:flex;align-items:flex-start;justify-content:center;color:var(--vermelho);font-family:'Pincel','Arial Black',Arial,sans-serif;}
+.quad .rs{font-size:8vw;margin-top:3vw;margin-right:1vw;}
+.quad .val{font-size:28vw;line-height:.78;}
+.quad .cent{font-size:13vw;vertical-align:super;}
+.quad .kg{font-size:5vw;align-self:flex-end;margin-bottom:3vw;margin-left:1vw;color:#5a4b00;}
+
+#rodape{min-height:5vh;background:var(--amarelo);display:flex;align-items:center;overflow:hidden;border-radius:0 0 1.5vw 1.5vw;}
+#ticker{white-space:nowrap;color:var(--azul);font-size:3.6vw;font-weight:bold;text-transform:uppercase;will-change:transform;}
+#pag{position:absolute;right:1vw;bottom:0;color:#cdd8f5;font-size:2.4vw;font-weight:bold;}
 </style>
 </head>
 <body>
 <div id="banner">
   <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR">
-  <div class="faixa"></div>
-  <div class="nota">Ofertas em instantes</div>
+  <div class="faixa"></div><div class="nota">Ofertas em instantes</div>
 </div>
 <div id="painel">
   <div id="topo">
     <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR Supermercado">
     <div id="relogio"><div id="hora">--:--</div><div id="data">--</div></div>
   </div>
-  <div id="corpo"><div id="grade"></div><div id="pag"></div></div>
+  <div id="corpo"><div id="grade"></div><div id="ofertas"></div><div id="pag"></div></div>
   <div id="rodape"><div id="ticker"></div></div>
 </div>
 <script>
@@ -65,18 +80,25 @@ function xhrGet(u,ok,fail){try{var x=new XMLHttpRequest();x.open("GET",u,true);x
 function dois(n){return n<10?"0"+n:""+n;}
 var DIAS=["DOMINGO","SEGUNDA","TERCA","QUARTA","QUINTA","SEXTA","SABADO"];var MESES=["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
 function tickRelogio(){var d=new Date();document.getElementById('hora').innerHTML=dois(d.getHours())+":"+dois(d.getMinutes());document.getElementById('data').innerHTML=DIAS[d.getDay()]+" "+dois(d.getDate())+" "+MESES[d.getMonth()];}
-function montarLinhas(dados){var l=[];for(var i=0;i<dados.length;i++){var c=dados[i];if(!c.produtos||!c.produtos.length)continue;l.push({tipo:"cat",texto:c.categoria});for(var j=0;j<c.produtos.length;j++){l.push({tipo:"prod",nome:c.produtos[j],valor:c.valor?c.valor[j]:"",medida:c.medida?c.medida[j]:"",promo:c.promocao&&(c.promocao[j]=="1"||c.promocao[j]===1)});}}return l;}
+var LINHAS=[],PROMOS=[];
+function montar(dados){var l=[],pr=[];for(var i=0;i<dados.length;i++){var c=dados[i];if(!c.produtos||!c.produtos.length)continue;l.push({tipo:"cat",texto:c.categoria});for(var j=0;j<c.produtos.length;j++){var o={tipo:"prod",nome:c.produtos[j],valor:c.valor?c.valor[j]:"",medida:c.medida?c.medida[j]:"",promo:c.promocao&&(c.promocao[j]=="1"||c.promocao[j]===1)};l.push(o);if(o.promo)pr.push(o);}}LINHAS=l;PROMOS=pr;}
 function elCat(t){var d=document.createElement('div');d.className='catband';d.innerHTML=t;return d;}
-function elProd(p){var d=document.createElement('div');d.className='card'+(p.promo?' promo':'');d.innerHTML=(p.promo?'<div class="selo">OFERTA</div>':'')+'<div class="nome">'+p.nome+'</div><div class="bloco"><span class="cifra">R$</span><span class="preco">'+p.valor+'</span><span class="medida">'+p.medida+'</span></div>';return d;}
-var PAGINAS=[],pag=0,LINHAS=[];
-function paginar(linhas){PAGINAS=[];var grade=document.getElementById('grade');var corpo=document.getElementById('corpo');var alturaMax=corpo.clientHeight-10;grade.innerHTML="";var atual=[];for(var i=0;i<linhas.length;i++){var L=linhas[i];var el=(L.tipo==="cat")?elCat(L.texto):elProd(L);grade.appendChild(el);if(grade.offsetHeight>alturaMax&&atual.length>0){grade.removeChild(el);PAGINAS.push(atual.slice());atual=[L];grade.innerHTML="";grade.appendChild(el);}else{atual.push(L);}}if(atual.length)PAGINAS.push(atual.slice());if(!PAGINAS.length)PAGINAS=[[]];if(pag>=PAGINAS.length)pag=0;}
-function render(){var grade=document.getElementById('grade');var p=PAGINAS[pag]||[];grade.style.opacity=0;setTimeout(function(){grade.innerHTML="";for(var i=0;i<p.length;i++){var L=p[i];grade.appendChild(L.tipo==="cat"?elCat(L.texto):elProd(L));}grade.style.opacity=1;document.getElementById('pag').innerHTML=PAGINAS.length>1?("Pag "+(pag+1)+"/"+PAGINAS.length):"";},180);}
-function carregar(){xhrGet(CFG.server+"/tabela/produtos.php?cod_tv="+CFG.cod_tv,function(dados){var l=montarLinhas(dados);if(!l.length){banner();return;}LINHAS=l;painel();paginar(LINHAS);render();},function(){banner();});}
-function virar(){if(PAGINAS.length<=1)return;pag=(pag+1)%PAGINAS.length;render();}
+function elProd(p){var d=document.createElement('div');d.className='card'+(p.promo?' promo':'');var tag=p.promo?'<span class="tag">OFERTA</span>':'';d.innerHTML='<div class="nome">'+tag+p.nome+'</div><div class="bloco"><span class="cifra">R$</span><span class="preco">'+p.valor+'</span><span class="medida">'+p.medida+'</span></div>';return d;}
+var PAGINAS=[];
+function paginar(){PAGINAS=[];var grade=document.getElementById('grade');var corpo=document.getElementById('corpo');var alturaMax=corpo.clientHeight-10;var vis=grade.style.display;grade.style.display='flex';grade.innerHTML="";var atual=[];for(var i=0;i<LINHAS.length;i++){var L=LINHAS[i];var el=(L.tipo==="cat")?elCat(L.texto):elProd(L);grade.appendChild(el);if(grade.offsetHeight>alturaMax&&atual.length>0){grade.removeChild(el);PAGINAS.push(atual.slice());atual=[L];grade.innerHTML="";grade.appendChild(el);}else{atual.push(L);}}if(atual.length)PAGINAS.push(atual.slice());if(!PAGINAS.length)PAGINAS=[[]];grade.style.display=vis;}
+function limpaNome(n){return (n||'').replace(/\s*(KG|UN|UNID|UND|LT|L|PCT|CX|DZ)\s*$/i,'');}
+function posterHTML(p){var nome=limpaNome(p.nome);var v=p.valor||"",intp=v,cent="";var ci=v.indexOf(',');if(ci>=0){intp=v.slice(0,ci);cent=v.slice(ci);}var med=(p.medida||'').toLowerCase();return '<div class="poster"><div class="quad"><div class="sel">Oferta</div><div class="nome">'+nome+'</div><div class="preco"><span class="rs">R$</span><span class="val">'+intp+'<span class="cent">'+cent+'</span></span><span class="kg">'+med+'</span></div></div></div>';}
+var cena=0;
+function totalCenas(){return PAGINAS.length+PROMOS.length;}
+function mostrarTabela(idx){document.getElementById('ofertas').style.display='none';var grade=document.getElementById('grade');grade.style.display='flex';grade.style.opacity=0;setTimeout(function(){var p=PAGINAS[idx]||[];grade.innerHTML="";for(var i=0;i<p.length;i++){var L=p[i];grade.appendChild(L.tipo==="cat"?elCat(L.texto):elProd(L));}grade.style.opacity=1;},180);}
+function mostrarPoster(pidx){document.getElementById('grade').style.display='none';var of=document.getElementById('ofertas');of.style.display='block';of.style.opacity=0;of.innerHTML=posterHTML(PROMOS[pidx]);setTimeout(function(){of.style.opacity=1;},180);}
+function renderCena(){var nt=PAGINAS.length;document.getElementById('pag').innerHTML=totalCenas()>1?("Tela "+(cena+1)+"/"+totalCenas()):"";if(cena>=nt && PROMOS.length){mostrarPoster(cena-nt);}else{mostrarTabela(cena);}}
+function virar(){if(totalCenas()<=1)return;cena=(cena+1)%totalCenas();renderCena();}
+function carregar(){xhrGet(CFG.server+"/tabela/produtos.php?cod_tv="+CFG.cod_tv,function(dados){montar(dados);if(!LINHAS.length){banner();return;}painel();paginar();if(cena>=totalCenas())cena=0;renderCena();},function(){banner();});}
 var tx=0;function rolarTicker(){var t=document.getElementById('ticker');tx-=1.3;if(Math.abs(tx)>t.scrollWidth/2)tx=0;t.style.transform="translateX("+tx+"px)";}
 banner();tickRelogio();carregar();
 setInterval(tickRelogio,1000);setInterval(carregar,CFG.refreshMs);setInterval(virar,CFG.pageMs);setInterval(rolarTicker,30);
-window.onresize=function(){if(LINHAS.length&&document.getElementById('painel').style.display!=='none'){paginar(LINHAS);render();}};
+window.onresize=function(){if(LINHAS.length&&document.getElementById('painel').style.display!=='none'){paginar();renderCena();}};
 </script>
 </body>
 </html>

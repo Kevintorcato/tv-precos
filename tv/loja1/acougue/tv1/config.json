@@ -1,6 +1,1 @@
-{
-  "server": "http://10.6.1.253:9001/tv",
-  "cod_tv": 1,
-  "titulo": "Açougue",
-  "orientacao": "paisagem"
-}
+{ "server":"http://10.6.1.253:9001/tv", "cod_tv":1, "titulo":"Açougue", "orientacao":"paisagem" }

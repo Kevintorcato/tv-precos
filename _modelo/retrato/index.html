@@ -3,71 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>WR Supermercado - Ofertas</title>
+<title>WR Supermercado - Vertical</title>
 <style>
+/* Unidades SWAPADAS: o conteudo fica dentro de #rot (girado 90).
+   Dentro dele: 1vh = 1% da largura-retrato ; 1vw = 1% da altura-retrato. */
 :root{--azul:#0b3fa8;--azul-esc:#082a73;--azul-txt:#0a2a66;--amarelo:#ffc400;--amarelo-claro:#ffd83a;--vermelho:#d81f26;}
 @font-face{font-family:'Pincel';src:url('https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/fonts/PermanentMarker.ttf') format('truetype');font-display:swap;}
 @keyframes pisca{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.1);}}
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
-body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
-#banner{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
-#banner img{width:74vw;background:#fff;border-radius:3vw;padding:4vw;box-shadow:0 1vh 4vh rgba(0,0,0,.35);}
-#banner .nota{color:#fff;font-size:3.6vw;margin-top:4vh;text-transform:uppercase;letter-spacing:.4vw;opacity:.9;}
-#banner .faixa{width:46vw;height:1vh;background:var(--amarelo);border-radius:1vh;margin-top:3vh;}
+html,body{width:100%;height:100%;overflow:hidden;background:#082a73;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
 
-#painel{width:100%;height:100%;display:none;flex-direction:column;padding:2.5vh 3vw;}
-#topo{min-height:8vh;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:1.5vh 3vw;border-bottom:.8vh solid var(--amarelo);box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);border-radius:1.5vw 1.5vw 0 0;}
-#topo img{height:7vw;}
+/* wrapper que gira a pagina 90 (geometria em unidades REAIS do viewport) */
+#rot{position:absolute;top:100%;left:0;transform-origin:left top;transform:rotate(-90deg);
+  width:100vh;height:100vw;overflow:hidden;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
+
+#banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
+#banner img{width:74vh;background:#fff;border-radius:3vh;padding:4vh;box-shadow:0 1vw 4vw rgba(0,0,0,.35);}
+#banner .nota{color:#fff;font-size:3.6vh;margin-top:4vw;text-transform:uppercase;letter-spacing:.4vh;opacity:.9;}
+#banner .faixa{width:46vh;height:1vw;background:var(--amarelo);border-radius:1vw;margin-top:3vw;}
+
+#painel{width:100%;height:100%;display:none;flex-direction:column;padding:2.5vw 3vh;}
+#topo{min-height:8vw;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:1.5vw 3vh;border-bottom:.8vw solid var(--amarelo);box-shadow:0 .4vw 1.2vw rgba(0,0,0,.25);border-radius:1.5vh 1.5vh 0 0;}
+#topo img{height:7vh;}
 #relogio{text-align:right;color:var(--azul);line-height:1;}
-#hora{font-size:5vw;font-weight:bold;}
-#data{font-size:2.2vw;font-weight:bold;text-transform:uppercase;color:#4a6bbf;margin-top:.5vh;}
-#corpo{flex:1;padding:2vh 0;overflow:hidden;position:relative;}
+#hora{font-size:5vh;font-weight:bold;}
+#data{font-size:2.2vh;font-weight:bold;text-transform:uppercase;color:#4a6bbf;margin-top:.5vw;}
+#corpo{flex:1;padding:2vw 0;overflow:hidden;position:relative;}
 
-/* TABELA (coluna unica) */
-#grade{display:flex;flex-direction:column;gap:1.4vh;transition:opacity .4s ease;}
-.catband{color:#fff;font-size:4.4vw;font-weight:bold;text-transform:uppercase;letter-spacing:.2vw;padding:.4vh 0 1vh;border-bottom:.35vh solid var(--amarelo);margin-top:.6vh;display:flex;align-items:center;gap:2vw;}
-.catband:before{content:"";width:2.4vw;height:4.4vw;background:var(--amarelo);border-radius:.5vw;}
-.card{width:100%;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:2vw;padding:1.8vh 4vw;display:flex;align-items:center;justify-content:space-between;box-shadow:0 .6vh 1.6vh rgba(0,0,0,.28);overflow:hidden;}
-.card .nome{font-size:4.4vw;font-weight:bold;color:var(--azul-txt);line-height:1.05;flex:1;padding-right:3vw;text-transform:uppercase;}
-.card .tag{display:inline-block;background:var(--vermelho);color:#fff;font-size:2.6vw;font-weight:900;padding:.1vh 1.5vw;border-radius:1vw;margin-right:1.5vw;vertical-align:middle;}
+#grade{display:flex;flex-direction:column;gap:1.4vw;transition:opacity .4s ease;}
+.catband{color:#fff;font-size:4.4vh;font-weight:bold;text-transform:uppercase;letter-spacing:.2vh;padding:.4vw 0 1vw;border-bottom:.35vw solid var(--amarelo);margin-top:.6vw;display:flex;align-items:center;gap:2vh;}
+.catband:before{content:"";width:2.4vh;height:4.4vh;background:var(--amarelo);border-radius:.5vh;}
+.card{width:100%;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:2vh;padding:1.8vw 4vh;display:flex;align-items:center;justify-content:space-between;box-shadow:0 .6vw 1.6vw rgba(0,0,0,.28);overflow:hidden;}
+.card .nome{font-size:4.4vh;font-weight:bold;color:var(--azul-txt);line-height:1.05;flex:1;padding-right:3vh;text-transform:uppercase;}
+.card .tag{display:inline-block;background:var(--vermelho);color:#fff;font-size:2.6vh;font-weight:900;padding:.1vw 1.5vh;border-radius:1vh;margin-right:1.5vh;vertical-align:middle;}
 .card .bloco{display:flex;align-items:baseline;white-space:nowrap;}
-.card .cifra{font-size:3.6vw;font-weight:bold;color:var(--vermelho);margin-right:.5vw;}
-.card .preco{font-size:7vw;font-weight:900;color:var(--vermelho);line-height:1;}
-.card .medida{font-size:2.8vw;font-weight:bold;color:#7a5c00;margin-left:1vw;align-self:flex-end;margin-bottom:.4vh;}
-.card.promo{background:linear-gradient(180deg,#ff2a33,#e60012);box-shadow:0 .6vh 2vh rgba(230,0,18,.5);}
+.card .cifra{font-size:3.6vh;font-weight:bold;color:var(--vermelho);margin-right:.5vh;}
+.card .preco{font-size:7vh;font-weight:900;color:var(--vermelho);line-height:1;}
+.card .medida{font-size:2.8vh;font-weight:bold;color:#7a5c00;margin-left:1vh;align-self:flex-end;margin-bottom:.4vw;}
+.card.promo{background:linear-gradient(180deg,#ff2a33,#e60012);box-shadow:0 .6vw 2vw rgba(230,0,18,.5);}
 .card.promo .nome{color:#fff;}.card.promo .tag{background:#ffe14d;color:#c00;}
 .card.promo .cifra,.card.promo .preco{color:#ffe14d;}.card.promo .medida{color:#ffe7a0;}
 
-/* OFERTA (cartao vertical amarelo) */
 #ofertas{display:none;height:100%;transition:opacity .4s ease;}
 .poster{height:100%;display:flex;align-items:center;justify-content:center;}
-.quad{width:90vw;max-width:90vw;min-height:62vh;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:3vw;box-shadow:0 1.2vh 4vh rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5vh 6vw;}
-.quad .sel{background:var(--vermelho);color:#fff;font-size:6vw;font-weight:900;padding:1vh 7vw;border-radius:8vw;text-transform:uppercase;letter-spacing:.3vw;margin-bottom:3vh;box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);animation:pisca 1.1s ease-in-out infinite;}
-.quad .nome{color:#111;font-size:9vw;line-height:1.02;text-transform:uppercase;font-family:'Pincel','Arial Black',Arial,sans-serif;word-break:break-word;}
-.quad .preco{margin-top:2vh;display:flex;align-items:flex-start;justify-content:center;color:var(--vermelho);font-family:'Pincel','Arial Black',Arial,sans-serif;}
-.quad .rs{font-size:8vw;margin-top:3vw;margin-right:1vw;}
-.quad .val{font-size:28vw;line-height:.78;}
-.quad .cent{font-size:13vw;vertical-align:super;}
-.quad .kg{font-size:5vw;align-self:flex-end;margin-bottom:3vw;margin-left:1vw;color:#5a4b00;}
+.quad{width:90vh;max-width:90vh;min-height:62vw;background:linear-gradient(180deg,var(--amarelo-claro),var(--amarelo));border-radius:3vh;box-shadow:0 1.2vw 4vw rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5vw 6vh;}
+.quad .sel{background:var(--vermelho);color:#fff;font-size:6vh;font-weight:900;padding:1vw 7vh;border-radius:8vh;text-transform:uppercase;letter-spacing:.3vh;margin-bottom:3vw;box-shadow:0 .4vw 1.2vw rgba(0,0,0,.25);animation:pisca 1.1s ease-in-out infinite;}
+.quad .nome{color:#111;font-size:9vh;line-height:1.02;text-transform:uppercase;font-family:'Pincel','Arial Black',Arial,sans-serif;word-break:break-word;}
+.quad .preco{margin-top:2vw;display:flex;align-items:flex-start;justify-content:center;color:var(--vermelho);font-family:'Pincel','Arial Black',Arial,sans-serif;}
+.quad .rs{font-size:8vh;margin-top:3vh;margin-right:1vh;}
+.quad .val{font-size:28vh;line-height:.78;}
+.quad .cent{font-size:13vh;vertical-align:super;}
+.quad .kg{font-size:5vh;align-self:flex-end;margin-bottom:3vh;margin-left:1vh;color:#5a4b00;}
 
-#rodape{min-height:5vh;background:var(--amarelo);display:flex;align-items:center;overflow:hidden;border-radius:0 0 1.5vw 1.5vw;}
-#ticker{white-space:nowrap;color:var(--azul);font-size:3.6vw;font-weight:bold;text-transform:uppercase;will-change:transform;}
-#pag{position:absolute;right:1vw;bottom:0;color:#cdd8f5;font-size:2.4vw;font-weight:bold;}
+#rodape{min-height:5vw;background:var(--amarelo);display:flex;align-items:center;overflow:hidden;border-radius:0 0 1.5vh 1.5vh;}
+#ticker{white-space:nowrap;color:var(--azul);font-size:3.6vh;font-weight:bold;text-transform:uppercase;will-change:transform;}
+#pag{position:absolute;right:1vh;bottom:0;color:#cdd8f5;font-size:2.4vh;font-weight:bold;}
 </style>
 </head>
 <body>
-<div id="banner">
-  <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR">
-  <div class="faixa"></div><div class="nota">Ofertas em instantes</div>
-</div>
-<div id="painel">
-  <div id="topo">
-    <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR Supermercado">
-    <div id="relogio"><div id="hora">--:--</div><div id="data">--</div></div>
+<div id="rot">
+  <div id="banner">
+    <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR">
+    <div class="faixa"></div><div class="nota">Ofertas em instantes</div>
   </div>
-  <div id="corpo"><div id="grade"></div><div id="ofertas"></div><div id="pag"></div></div>
-  <div id="rodape"><div id="ticker"></div></div>
+  <div id="painel">
+    <div id="topo">
+      <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR Supermercado">
+      <div id="relogio"><div id="hora">--:--</div><div id="data">--</div></div>
+    </div>
+    <div id="corpo"><div id="grade"></div><div id="ofertas"></div><div id="pag"></div></div>
+    <div id="rodape"><div id="ticker"></div></div>
+  </div>
 </div>
 <script>
 var CFG={server:"http://10.6.1.253:9001/tv",cod_tv:1,titulo:"Acougue",refreshMs:45000,pageMs:12000};

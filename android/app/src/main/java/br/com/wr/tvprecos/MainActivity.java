@@ -176,9 +176,10 @@ public class MainActivity extends Activity {
         new Thread(new Runnable(){ public void run(){
             try {
                 String base = raw(path);
-                String cfg  = http(base + "/config.json", false);
-                String html = http(base + "/index.html", false);
-                String ver  = http(base + "/version.txt", false);
+                String cb = "?t=" + System.currentTimeMillis();  // fura o cache do GitHub
+                String cfg  = http(base + "/config.json" + cb, false);
+                String html = http(base + "/index.html" + cb, false);
+                String ver  = http(base + "/version.txt" + cb, false);
                 if (cfg == null || html == null) { semRede(); return; }
                 if (ver != null) ver = ver.trim();
 
@@ -249,7 +250,7 @@ public class MainActivity extends Activity {
 
     private void checarVersao() {
         try {
-            String ver = http(raw(path) + "/version.txt", false);
+            String ver = http(raw(path) + "/version.txt?t=" + System.currentTimeMillis(), false);
             if (ver == null) return;
             ver = ver.trim();
             SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);

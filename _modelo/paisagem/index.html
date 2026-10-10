@@ -12,10 +12,11 @@
 html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
 body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 
-#banner{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
-#banner img{width:46vw;max-width:900px;background:#fff;border-radius:3vh;padding:3vh 4vw;box-shadow:0 1vh 4vh rgba(0,0,0,.35);}
-#banner .nota{color:#fff;font-size:3vh;margin-top:4vh;text-transform:uppercase;letter-spacing:.4vw;opacity:.9;}
-#banner .faixa{width:24vw;height:.9vh;background:var(--amarelo);border-radius:1vh;margin-top:3vh;}
+#banner{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
+#banner .logobox{background:#fff;border-radius:3vh;padding:6vh 7vw;box-shadow:0 1.5vh 5vh rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}
+#banner .logobox img{display:block;height:20vh;width:auto;max-width:66vw;}
+#banner .faixa{width:16vw;height:1vh;background:var(--amarelo);border-radius:1vh;margin-top:5vh;}
+#banner .nota{color:#fff;font-size:2.8vh;margin-top:3vh;text-transform:uppercase;letter-spacing:.5vw;opacity:.92;}
 
 #painel{width:100%;height:100%;display:none;flex-direction:column;padding:3.2vh 3.2vw;}
 #topo{height:15vh;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 3vw;border-bottom:.9vh solid var(--amarelo);box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);border-radius:1.2vh 1.2vh 0 0;}
@@ -59,8 +60,9 @@ body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 </head>
 <body>
 <div id="banner">
-  <img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR">
-  <div class="faixa"></div><div class="nota">Ofertas em instantes</div>
+  <div class="logobox"><img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR"></div>
+  <div class="faixa"></div>
+  <div class="nota">Ofertas em instantes</div>
 </div>
 <div id="painel">
   <div id="topo">

@@ -175,20 +175,19 @@ public class MainActivity extends Activity {
         if (path == null) return;
         new Thread(new Runnable(){ public void run(){
             try {
-                String base = raw(path);
-                String cb = "?t=" + System.currentTimeMillis();  // fura o cache do GitHub
-                String cfg  = http(base + "/config.json" + cb, false);
-                String html = http(base + "/index.html" + cb, false);
-                String ver  = http(base + "/version.txt" + cb, false);
-                if (cfg == null || html == null) { semRede(); return; }
-                if (ver != null) ver = ver.trim();
-
+                String sha = getSha();                 // SHA do commit = versao (URL imutavel, sem cache velho)
+                if (sha == null) { semRede(); return; }
                 SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
-                if (!forcar && ver != null && ver.equals(p.getString("ver","")) && cacheOk()) return;
+                if (!forcar && sha.equals(p.getString("ver","")) && cacheOk()) return;
+
+                String base = rawAt(sha, path);
+                String cfg  = http(base + "/config.json", false);
+                String html = http(base + "/index.html", false);
+                if (cfg == null || html == null) { semRede(); return; }
 
                 salvar("config.json", cfg);
                 salvar("index.html", html);
-                p.edit().putString("ver", ver==null?"":ver).apply();
+                p.edit().putString("ver", sha).apply();
                 ui.post(new Runnable(){ public void run(){ renderDoCache(); }});
             } catch (Exception e) { semRede(); }
         }}).start();
@@ -250,12 +249,23 @@ public class MainActivity extends Activity {
 
     private void checarVersao() {
         try {
-            String ver = http(raw(path) + "/version.txt?t=" + System.currentTimeMillis(), false);
-            if (ver == null) return;
-            ver = ver.trim();
+            String sha = getSha();
+            if (sha == null) return;
             SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
-            if (!ver.equals(p.getString("ver", "")) || !cacheOk()) baixar(true);
+            if (!sha.equals(p.getString("ver", "")) || !cacheOk()) baixar(true);
         } catch (Exception ignore) {}
+    }
+
+    /** SHA do ultimo commit do branch (via API). URL imutavel = nunca pega cache velho. */
+    private String getSha() {
+        try {
+            String j = http("https://api.github.com/repos/" + OWNER + "/" + REPO + "/commits/" + BRANCH, true);
+            if (j == null) return null;
+            return new JSONObject(j).optString("sha", null);
+        } catch (Exception e) { return null; }
+    }
+    private String rawAt(String sha, String p){
+        return "https://raw.githubusercontent.com/" + OWNER + "/" + REPO + "/" + sha + "/" + p;
     }
 
     // ===================== http =====================

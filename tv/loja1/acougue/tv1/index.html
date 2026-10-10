@@ -4,26 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>WR Supermercado - Ofertas</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Archivo+Black&display=swap" rel="stylesheet">
 <style>
 :root{--azul:#0b3fa8;--azul-esc:#082a73;--azul-txt:#0a2a66;--amarelo:#ffc400;--amarelo-claro:#ffd83a;--vermelho:#d81f26;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
 body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 
-/* BANNER standby */
 #banner{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 #banner img{width:46vw;max-width:900px;background:#fff;border-radius:3vh;padding:3vh 4vw;box-shadow:0 1vh 4vh rgba(0,0,0,.35);}
 #banner .nota{color:#fff;font-size:3vh;margin-top:4vh;text-transform:uppercase;letter-spacing:.4vw;opacity:.9;}
 #banner .faixa{width:24vw;height:.9vh;background:var(--amarelo);border-radius:1vh;margin-top:3vh;}
 
-/* PAINEL (padding = margem contra overscan) */
 #painel{width:100%;height:100%;display:none;flex-direction:column;padding:3.2vh 3.2vw;}
 #topo{height:15vh;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 3vw;border-bottom:.9vh solid var(--amarelo);box-shadow:0 .4vh 1.2vh rgba(0,0,0,.25);border-radius:1.2vh 1.2vh 0 0;}
 #topo img{height:9.5vh;}
 #relogio{text-align:right;color:var(--azul);line-height:1;}
 #hora{font-size:5.4vh;font-weight:bold;}
 #data{font-size:2.3vh;font-weight:bold;text-transform:uppercase;letter-spacing:.15vw;color:#4a6bbf;margin-top:.6vh;}
-
 #corpo{flex:1;padding:2vh 0;overflow:hidden;position:relative;}
 
 /* ===== CENA TABELA ===== */
@@ -38,21 +37,23 @@ body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 .card .preco{font-size:5.4vh;font-weight:900;color:var(--vermelho);line-height:1;}
 .card .medida{font-size:2.2vh;font-weight:bold;color:#7a5c00;margin-left:.5vw;align-self:flex-end;margin-bottom:.6vh;}
 .card.promo{background:linear-gradient(180deg,#ff2a33,#e60012);box-shadow:0 .6vh 2vh rgba(230,0,18,.5);}
-.card.promo .nome{color:#fff;}
-.card.promo .tag{background:#ffe14d;color:#c00;}
-.card.promo .cifra,.card.promo .preco{color:#ffe14d;}
-.card.promo .medida{color:#ffe7a0;}
+.card.promo .nome{color:#fff;}.card.promo .tag{background:#ffe14d;color:#c00;}
+.card.promo .cifra,.card.promo .preco{color:#ffe14d;}.card.promo .medida{color:#ffe7a0;}
 
-/* ===== CENA OFERTAS (letras grandes, so promocoes) ===== */
-#ofertas{display:none;flex-direction:column;height:100%;transition:opacity .4s ease;}
-#ofertas .titulo{color:#ffe14d;font-size:6vh;font-weight:900;text-transform:uppercase;letter-spacing:.4vw;text-align:center;margin-bottom:2vh;text-shadow:0 .4vh 1vh rgba(0,0,0,.4);}
-#ofertas .lista{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2vh;}
-.oferta{background:linear-gradient(180deg,#ff2a33,#e60012);border-radius:2vh;padding:2.4vh 3vw;display:flex;align-items:center;justify-content:space-between;box-shadow:0 .8vh 2.5vh rgba(0,0,0,.4);}
-.oferta .nome{font-size:6vh;font-weight:900;color:#fff;text-transform:uppercase;line-height:1;flex:1;padding-right:2vw;}
-.oferta .bloco{display:flex;align-items:baseline;white-space:nowrap;}
-.oferta .cifra{font-size:4vh;font-weight:bold;color:#ffe14d;margin-right:.5vw;}
-.oferta .preco{font-size:11vh;font-weight:900;color:#ffe14d;line-height:.9;}
-.oferta .medida{font-size:3.4vh;font-weight:bold;color:#ffe7a0;margin-left:1vw;align-self:flex-end;margin-bottom:1.2vh;}
+/* ===== CENA CARTAZ DE OFERTA (estilo cartaz de mercado) ===== */
+#ofertas{display:none;height:100%;transition:opacity .4s ease;}
+.poster{height:100%;background:var(--vermelho);border-radius:1.6vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+.poster .cab{color:#fff;font-size:5vh;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:.1vw;padding:2.4vh 0 .5vh;text-align:center;text-shadow:0 .3vh .8vh rgba(0,0,0,.35);}
+.poster .wrap{flex:1;display:flex;align-items:center;justify-content:center;width:100%;}
+.burst{width:66vh;height:66vh;max-width:94%;background:var(--amarelo);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10vh 8vh;
+  clip-path:polygon(50% 0%,61% 13%,78% 8%,74% 26%,92% 29%,79% 42%,98% 50%,79% 58%,92% 71%,74% 74%,78% 92%,61% 87%,50% 100%,39% 87%,22% 92%,26% 74%,8% 71%,21% 58%,2% 50%,21% 42%,8% 29%,26% 26%,22% 8%,39% 13%);}
+.burst .nome{font-family:'Permanent Marker',cursive;color:#141414;font-size:6.5vh;line-height:.92;text-transform:uppercase;}
+.burst .preco{display:flex;align-items:flex-start;justify-content:center;margin-top:1.5vh;font-family:'Permanent Marker',cursive;color:var(--vermelho);}
+.burst .rs{font-size:5.5vh;margin-top:2.5vh;margin-right:.4vw;}
+.burst .val{font-size:16vh;line-height:.78;position:relative;}
+.burst .val:after{content:"";position:absolute;left:4%;right:4%;bottom:-.3vh;height:1vh;background:var(--vermelho);border-radius:1vh;}
+.burst .cent{font-size:8vh;vertical-align:super;}
+.burst .kg{font-size:4.2vh;align-self:flex-end;margin-bottom:2.5vh;margin-left:.6vw;}
 
 #rodape{height:6vh;background:var(--amarelo);display:flex;align-items:center;overflow:hidden;border-radius:0 0 1.2vh 1.2vh;}
 #ticker{white-space:nowrap;color:var(--azul);font-size:2.6vh;font-weight:bold;text-transform:uppercase;will-change:transform;}
@@ -71,7 +72,7 @@ body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
   </div>
   <div id="corpo">
     <div id="grade"></div>
-    <div id="ofertas"><div class="titulo">Ofertas Imperdiveis</div><div class="lista"></div></div>
+    <div id="ofertas"></div>
     <div id="pag"></div>
   </div>
   <div id="rodape"><div id="ticker"></div></div>
@@ -90,42 +91,43 @@ function tickRelogio(){var d=new Date();document.getElementById('hora').innerHTM
 
 var LINHAS=[],PROMOS=[];
 function montar(dados){var l=[],pr=[];for(var i=0;i<dados.length;i++){var c=dados[i];if(!c.produtos||!c.produtos.length)continue;l.push({tipo:"cat",texto:c.categoria});for(var j=0;j<c.produtos.length;j++){var o={tipo:"prod",nome:c.produtos[j],valor:c.valor?c.valor[j]:"",medida:c.medida?c.medida[j]:"",promo:c.promocao&&(c.promocao[j]=="1"||c.promocao[j]===1)};l.push(o);if(o.promo)pr.push(o);}}LINHAS=l;PROMOS=pr;}
-
 function elCat(t){var d=document.createElement('div');d.className='catband';d.innerHTML=t;return d;}
 function elProd(p){var d=document.createElement('div');d.className='card'+(p.promo?' promo':'');var tag=p.promo?'<span class="tag">OFERTA</span>':'';d.innerHTML='<div class="nome">'+tag+p.nome+'</div><div class="bloco"><span class="cifra">R$</span><span class="preco">'+p.valor+'</span><span class="medida">'+p.medida+'</span></div>';return d;}
 
-/* paginacao da tabela */
 var PAGINAS=[];
 function paginar(){PAGINAS=[];var grade=document.getElementById('grade');var corpo=document.getElementById('corpo');var alturaMax=corpo.clientHeight-10;var vis=grade.style.display;grade.style.display='flex';grade.innerHTML="";var atual=[];for(var i=0;i<LINHAS.length;i++){var L=LINHAS[i];var el=(L.tipo==="cat")?elCat(L.texto):elProd(L);grade.appendChild(el);if(grade.offsetHeight>alturaMax&&atual.length>0){grade.removeChild(el);PAGINAS.push(atual.slice());atual=[L];grade.innerHTML="";grade.appendChild(el);}else{atual.push(L);}}if(atual.length)PAGINAS.push(atual.slice());if(!PAGINAS.length)PAGINAS=[[]];grade.style.display=vis;}
 
-/* cenas: cada pagina da tabela + 1 cena de ofertas (se houver promo) */
+/* cartaz de 1 promocao */
+function limpaNome(n){return (n||'').replace(/\s*(KG|UN|UNID|UND|LT|L|PCT|CX|DZ)\s*$/i,'');}
+function posterHTML(p){
+  var nome=limpaNome(p.nome);var v=p.valor||"",intp=v,cent="";var ci=v.indexOf(',');if(ci>=0){intp=v.slice(0,ci);cent=v.slice(ci);}
+  var med=(p.medida||'').toLowerCase();
+  return '<div class="poster"><div class="cab">Oferta do '+CFG.titulo+'</div><div class="wrap"><div class="burst">'+
+    '<div class="nome">'+nome+'</div>'+
+    '<div class="preco"><span class="rs">R$</span><span class="val">'+intp+'<span class="cent">'+cent+'</span></span><span class="kg">'+med+'</span></div>'+
+    '</div></div></div>';
+}
+
 var cena=0;
-function totalCenas(){return PAGINAS.length+(PROMOS.length?1:0);}
+function totalCenas(){return PAGINAS.length+PROMOS.length;}
 function mostrarTabela(idx){
   document.getElementById('ofertas').style.display='none';
   var grade=document.getElementById('grade');grade.style.display='flex';grade.style.opacity=0;
   setTimeout(function(){var p=PAGINAS[idx]||[];grade.innerHTML="";for(var i=0;i<p.length;i++){var L=p[i];grade.appendChild(L.tipo==="cat"?elCat(L.texto):elProd(L));}grade.style.opacity=1;},180);
 }
-function mostrarOfertas(){
+function mostrarPoster(pidx){
   document.getElementById('grade').style.display='none';
-  var of=document.getElementById('ofertas');of.style.display='flex';of.style.opacity=0;
-  var lista=of.querySelector('.lista');lista.innerHTML="";
-  for(var i=0;i<PROMOS.length && i<4;i++){var p=PROMOS[i];var d=document.createElement('div');d.className='oferta';d.innerHTML='<div class="nome">'+p.nome+'</div><div class="bloco"><span class="cifra">R$</span><span class="preco">'+p.valor+'</span><span class="medida">'+p.medida+'</span></div>';lista.appendChild(d);}
+  var of=document.getElementById('ofertas');of.style.display='block';of.style.opacity=0;
+  of.innerHTML=posterHTML(PROMOS[pidx]);
   setTimeout(function(){of.style.opacity=1;},180);
 }
 function renderCena(){
   var nt=PAGINAS.length;
   document.getElementById('pag').innerHTML=totalCenas()>1?("Tela "+(cena+1)+"/"+totalCenas()):"";
-  if(PROMOS.length && cena===nt){mostrarOfertas();}else{mostrarTabela(cena);}
+  if(cena>=nt && PROMOS.length){mostrarPoster(cena-nt);}else{mostrarTabela(cena);}
 }
 function virar(){if(totalCenas()<=1)return;cena=(cena+1)%totalCenas();renderCena();}
-
-function carregar(){
-  xhrGet(CFG.server+"/tabela/produtos.php?cod_tv="+CFG.cod_tv,function(dados){
-    montar(dados);if(!LINHAS.length){banner();return;}
-    painel();paginar();if(cena>=totalCenas())cena=0;renderCena();
-  },function(){banner();});
-}
+function carregar(){xhrGet(CFG.server+"/tabela/produtos.php?cod_tv="+CFG.cod_tv,function(dados){montar(dados);if(!LINHAS.length){banner();return;}painel();paginar();if(cena>=totalCenas())cena=0;renderCena();},function(){banner();});}
 var tx=0;function rolarTicker(){var t=document.getElementById('ticker');tx-=1.3;if(Math.abs(tx)>t.scrollWidth/2)tx=0;t.style.transform="translateX("+tx+"px)";}
 banner();tickRelogio();carregar();
 setInterval(tickRelogio,1000);setInterval(carregar,CFG.refreshMs);setInterval(virar,CFG.pageMs);setInterval(rolarTicker,30);

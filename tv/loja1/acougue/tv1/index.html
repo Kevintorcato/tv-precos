@@ -5,77 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Tabela de Precos</title>
 <style>
-/* CSS conservador de proposito: sem variaveis CSS, sem grid. Flexbox + tabela.
-   Pra nao quebrar no WebView velho da MBox (Chromium antigo). */
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { width:100%; height:100%; overflow:hidden; background:#0e1116; font-family:Arial, Helvetica, sans-serif; -webkit-text-size-adjust:none; }
 
-#tela { width:100%; height:100%; display:flex; flex-direction:column; }
+/* ===== BANNER (standby, enquanto nao ha dados ao vivo) ===== */
+#banner { position:fixed; inset:0; width:100%; height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+  background:#c81d25; color:#fff; }
+#banner .marca { font-size:16vh; font-weight:bold; letter-spacing:0.5vw; line-height:1; }
+#banner .sub { font-size:6vh; font-weight:bold; letter-spacing:1.2vw; margin-top:1vh; text-transform:uppercase; }
+#banner .faixa { width:28vw; height:0.8vh; background:#ffd400; margin:3vh 0; border-radius:1vh; }
+#banner .nota { font-size:2.6vh; opacity:0.85; text-transform:uppercase; letter-spacing:0.3vw; }
 
-/* Cabecalho */
+/* ===== PAINEL (precos ao vivo) ===== */
+#painel { width:100%; height:100%; display:none; flex-direction:column; }
 #topo { height:11vh; background:#c81d25; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 3vw; border-bottom:0.4vh solid #ffd400; }
 #titulo { font-size:5.2vh; font-weight:bold; letter-spacing:0.08vw; text-transform:uppercase; }
 #relogio { text-align:right; line-height:1.05; }
 #hora { font-size:4.6vh; font-weight:bold; }
 #data { font-size:2.2vh; text-transform:uppercase; opacity:0.9; }
-
-/* Corpo */
 #corpo { flex:1; padding:1.2vh 2vw; overflow:hidden; position:relative; }
-
 table.lista { width:100%; border-collapse:collapse; }
 tr.cat td { background:#1b2430; color:#ffd400; font-size:3.1vh; font-weight:bold; text-transform:uppercase; padding:0.9vh 1.4vw; letter-spacing:0.05vw; border-bottom:0.3vh solid #ffd400; }
-
 tr.prod td { font-size:3.2vh; padding:0.95vh 1.4vw; border-bottom:0.15vh solid #222c38; color:#f2f4f7; }
 tr.prod:nth-child(even) td { background:#141922; }
 td.nome { width:70%; }
 td.cifra { width:7%; text-align:right; color:#9aa6b2; font-size:2.2vh; vertical-align:middle; }
 td.preco { width:14%; text-align:right; font-weight:bold; font-size:3.9vh; color:#fff; white-space:nowrap; }
 td.medida { width:9%; text-align:left; color:#9aa6b2; font-size:2.1vh; padding-left:0.6vw; }
-
-/* Linha em promocao (promocao = 1) */
 tr.promo td { background:#ffd400 !important; color:#111 !important; }
 tr.promo td.preco { color:#c81d25 !important; }
 tr.promo td.cifra, tr.promo td.medida { color:#5a4b00 !important; }
-
-/* Rodape */
 #rodape { height:5vh; background:#1b2430; color:#8a97a5; display:flex; align-items:center; justify-content:space-between; padding:0 3vw; font-size:2vh; }
 #statusfonte { color:#5a6b7a; }
-.online { color:#38d16a; }
-.offline { color:#ff6b6b; }
-
-/* Indicador de pagina */
 #paginas { font-size:2vh; }
 </style>
 </head>
 <body>
-<div id="tela">
+<!-- standby -->
+<div id="banner">
+  <div class="marca">WR</div>
+  <div class="sub">Supermercado</div>
+  <div class="faixa"></div>
+  <div class="nota">Ofertas em instantes</div>
+</div>
+<!-- precos -->
+<div id="painel">
   <div id="topo">
     <div id="titulo">Ofertas do Dia</div>
-    <div id="relogio">
-      <div id="hora">--:--</div>
-      <div id="data">--</div>
-    </div>
+    <div id="relogio"><div id="hora">--:--</div><div id="data">--</div></div>
   </div>
-  <div id="corpo">
-    <table class="lista" id="lista"><tbody id="corpolista"></tbody></table>
-  </div>
-  <div id="rodape">
-    <div id="statusfonte">iniciando...</div>
-    <div id="paginas"></div>
-  </div>
+  <div id="corpo"><table class="lista" id="lista"><tbody id="corpolista"></tbody></table></div>
+  <div id="rodape"><div id="statusfonte"></div><div id="paginas"></div></div>
 </div>
-
 <script>
-/* ===== CONFIG =====
-   No aparelho real, o APK injeta window.TV_CONFIG com o servidor e o cod_tv
-   certos de cada box. Aqui ficam so os defaults pra teste. */
-var CFG = {
-  server: "http://10.6.2.253:9001/tv",
-  cod_tv: 1,
-  titulo: "Ofertas do Dia",
-  refreshMs: 45000,   // rebusca o JSON a cada 45s
-  pageMs: 12000       // troca de pagina a cada 12s (quando tem muito produto)
-};
+var CFG = { server:"http://10.6.2.253:9001/tv", cod_tv:1, titulo:"Ofertas do Dia", refreshMs:45000, pageMs:12000 };
 if (window.TV_CONFIG) {
   if (TV_CONFIG.server)  CFG.server  = TV_CONFIG.server;
   if (TV_CONFIG.cod_tv)  CFG.cod_tv  = TV_CONFIG.cod_tv;
@@ -83,37 +67,22 @@ if (window.TV_CONFIG) {
 }
 document.getElementById('titulo').innerHTML = CFG.titulo;
 
-/* ===== Dados de exemplo (mock) =====
-   So aparece se a busca ao servidor falhar (ex: abrindo no PC por causa de CORS).
-   No WebView real, os dados vem do servidor. */
-var MOCK = [
-  {categoria:"BOVINOS", produtos:["ALCATRA BOVINA KG","COSTELA DIANTEIRA C/OSSO KG","PATINHO BOVINO KG","CARNE MOIDA 1A KG"], valor:["39,90","24,90","42,50","29,90"], promocao:["0","1","0","0"], medida:["KG","KG","KG","KG"]},
-  {categoria:"AVES E SUINOS", produtos:["FILE DE PEITO DE FRANGO KG","COXA E SOBRECOXA KG","LINGUICA TOSCANA KG","BISTECA SUINA KG"], valor:["17,90","11,90","19,90","21,90"], promocao:["0","1","0","0"], medida:["KG","KG","KG","KG"]},
-  {categoria:"HORTIFRUTI", produtos:["BANANA NANICA KG","TOMATE KG","BATATA LAVADA KG","CEBOLA KG","MACA FUJI KG"], valor:["4,99","6,90","5,49","4,29","8,90"], promocao:["1","0","0","0","0"], medida:["KG","KG","KG","KG","KG"]},
-  {categoria:"MERCEARIA", produtos:["ARROZ TIPO 1 5KG","FEIJAO CARIOCA 1KG","ACUCAR REFINADO 1KG","OLEO DE SOJA 900ML","CAFE TORRADO 500G"], valor:["24,90","7,49","4,19","6,99","15,90"], promocao:["0","0","0","1","0"], medida:["UN","UN","UN","UN","UN"]},
-  {categoria:"BEBIDAS", produtos:["REFRIGERANTE 2L","CERVEJA LATA 350ML","SUCO NECTAR 1L","AGUA MINERAL 1,5L"], valor:["8,99","3,49","5,90","2,99"], promocao:["0","0","0","0"], medida:["UN","UN","UN","UN"]}
-];
+function mostrarBanner(){ document.getElementById('banner').style.display='flex'; document.getElementById('painel').style.display='none'; }
+function mostrarPainel(){ document.getElementById('banner').style.display='none'; document.getElementById('painel').style.display='flex'; }
 
-/* ===== util ===== */
 function xhrGet(url, ok, fail) {
   try {
     var x = new XMLHttpRequest();
-    x.open("GET", url, true);
-    x.timeout = 8000;
+    x.open("GET", url, true); x.timeout = 8000;
     x.onreadystatechange = function(){
       if (x.readyState === 4) {
-        if (x.status >= 200 && x.status < 300) {
-          try { ok(JSON.parse(x.responseText)); }
-          catch(e){ fail(); }
-        } else { fail(); }
+        if (x.status >= 200 && x.status < 300) { try { ok(JSON.parse(x.responseText)); } catch(e){ fail(); } }
+        else { fail(); }
       }
     };
-    x.ontimeout = fail;
-    x.onerror = fail;
-    x.send();
+    x.ontimeout = fail; x.onerror = fail; x.send();
   } catch(e){ fail(); }
 }
-
 function dois(n){ return n < 10 ? "0"+n : ""+n; }
 var DIAS = ["DOMINGO","SEGUNDA","TERCA","QUARTA","QUINTA","SEXTA","SABADO"];
 var MESES = ["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
@@ -122,9 +91,6 @@ function tickRelogio(){
   document.getElementById('hora').innerHTML = dois(d.getHours())+":"+dois(d.getMinutes());
   document.getElementById('data').innerHTML = DIAS[d.getDay()]+" "+dois(d.getDate())+" "+MESES[d.getMonth()];
 }
-
-/* ===== montagem das linhas ===== */
-/* transforma o JSON numa lista plana de linhas (cabecalho de categoria + produtos) */
 function montarLinhas(dados){
   var linhas = [];
   for (var i=0; i<dados.length; i++){
@@ -132,112 +98,60 @@ function montarLinhas(dados){
     if (!c.produtos || !c.produtos.length) continue;
     linhas.push({tipo:"cat", texto:c.categoria});
     for (var j=0; j<c.produtos.length; j++){
-      linhas.push({
-        tipo:"prod",
-        nome: c.produtos[j],
-        valor: c.valor ? c.valor[j] : "",
-        medida: c.medida ? c.medida[j] : "",
-        promo: c.promocao && (c.promocao[j]=="1" || c.promocao[j]===1)
-      });
+      linhas.push({tipo:"prod", nome:c.produtos[j], valor:c.valor?c.valor[j]:"", medida:c.medida?c.medida[j]:"", promo:c.promocao&&(c.promocao[j]=="1"||c.promocao[j]===1)});
     }
   }
   return linhas;
 }
-
-function trCategoria(texto){
-  return '<tr class="cat"><td colspan="4">'+texto+'</td></tr>';
-}
+function trCategoria(texto){ return '<tr class="cat"><td colspan="4">'+texto+'</td></tr>'; }
 function trProduto(p){
   var cls = p.promo ? "prod promo" : "prod";
-  return '<tr class="'+cls+'">'+
-    '<td class="nome">'+p.nome+'</td>'+
-    '<td class="cifra">R$</td>'+
-    '<td class="preco">'+p.valor+'</td>'+
-    '<td class="medida">'+p.medida+'</td>'+
-  '</tr>';
+  return '<tr class="'+cls+'"><td class="nome">'+p.nome+'</td><td class="cifra">R$</td><td class="preco">'+p.valor+'</td><td class="medida">'+p.medida+'</td></tr>';
 }
-
-/* ===== paginacao: enche a tela ate caber, depois vira pagina ===== */
-var PAGINAS = [];
-var pagAtual = 0;
-
+var PAGINAS = []; var pagAtual = 0;
 function paginar(linhas){
   PAGINAS = [];
   var corpo = document.getElementById('corpo');
   var alturaMax = corpo.clientHeight - 10;
   var tbody = document.getElementById('corpolista');
-
-  var atual = [];
-  tbody.innerHTML = "";
+  var atual = []; tbody.innerHTML = "";
   for (var i=0; i<linhas.length; i++){
     var L = linhas[i];
     var html = (L.tipo==="cat") ? trCategoria(L.texto) : trProduto(L);
     tbody.innerHTML += html;
-    if (tbody.offsetHeight > alturaMax && atual.length > 0){
-      // estourou: fecha pagina atual, comeca nova com essa linha
-      PAGINAS.push(atual.slice());
-      atual = [L];
-      tbody.innerHTML = html;
-    } else {
-      atual.push(L);
-    }
+    if (tbody.offsetHeight > alturaMax && atual.length > 0){ PAGINAS.push(atual.slice()); atual=[L]; tbody.innerHTML=html; }
+    else { atual.push(L); }
   }
   if (atual.length) PAGINAS.push(atual.slice());
   if (!PAGINAS.length) PAGINAS = [[]];
   if (pagAtual >= PAGINAS.length) pagAtual = 0;
 }
-
 function render(linhas){
   var p = PAGINAS[pagAtual] || [];
   var tbody = document.getElementById('corpolista');
   var html = "";
-  for (var i=0; i<p.length; i++){
-    var L = p[i];
-    html += (L.tipo==="cat") ? trCategoria(L.texto) : trProduto(L);
-  }
+  for (var i=0; i<p.length; i++){ var L=p[i]; html += (L.tipo==="cat")?trCategoria(L.texto):trProduto(L); }
   tbody.innerHTML = html;
-  document.getElementById('paginas').innerHTML =
-    PAGINAS.length > 1 ? ("Pag "+(pagAtual+1)+"/"+PAGINAS.length) : "";
+  document.getElementById('paginas').innerHTML = PAGINAS.length>1 ? ("Pag "+(pagAtual+1)+"/"+PAGINAS.length) : "";
 }
-
-/* ===== ciclo ===== */
 var LINHAS = [];
 function carregar(){
   var url = CFG.server + "/tabela/produtos.php?cod_tv=" + CFG.cod_tv;
   xhrGet(url, function(dados){
-    LINHAS = montarLinhas(dados);
-    if (!LINHAS.length){ usarMock("servidor sem produtos"); return; }
-    marcarFonte(true, "ao vivo");
-    paginar(LINHAS); render(LINHAS);
-  }, function(){
-    usarMock("sem conexao com o servidor");
-  });
+    var linhas = montarLinhas(dados);
+    if (!linhas.length){ mostrarBanner(); return; }  // sem produtos -> banner
+    LINHAS = linhas;
+    var d = new Date();
+    document.getElementById('statusfonte').innerHTML = "atualizado "+dois(d.getHours())+":"+dois(d.getMinutes());
+    mostrarPainel(); paginar(LINHAS); render(LINHAS);
+  }, function(){ mostrarBanner(); });  // offline/erro -> banner (nunca preco falso)
 }
-function usarMock(motivo){
-  LINHAS = montarLinhas(MOCK);
-  marcarFonte(false, "EXEMPLO ("+motivo+")");
-  paginar(LINHAS); render(LINHAS);
-}
-function marcarFonte(online, txt){
-  var el = document.getElementById('statusfonte');
-  el.className = online ? "online" : "offline";
-  var d = new Date();
-  el.innerHTML = (online ? "ao vivo" : txt) + " \u00b7 atualizado "+dois(d.getHours())+":"+dois(d.getMinutes());
-}
-
-function virarPagina(){
-  if (PAGINAS.length <= 1) return;
-  pagAtual = (pagAtual + 1) % PAGINAS.length;
-  render(LINHAS);
-}
-
-/* start */
-tickRelogio();
-carregar();
+function virarPagina(){ if (PAGINAS.length<=1) return; pagAtual=(pagAtual+1)%PAGINAS.length; render(LINHAS); }
+mostrarBanner(); tickRelogio(); carregar();
 setInterval(tickRelogio, 1000);
 setInterval(carregar, CFG.refreshMs);
 setInterval(virarPagina, CFG.pageMs);
-window.onresize = function(){ if (LINHAS.length){ paginar(LINHAS); render(LINHAS); } };
+window.onresize = function(){ if (LINHAS.length && document.getElementById('painel').style.display!=='none'){ paginar(LINHAS); render(LINHAS); } };
 </script>
 </body>
 </html>

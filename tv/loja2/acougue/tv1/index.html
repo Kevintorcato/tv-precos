@@ -9,6 +9,7 @@
 @font-face{font-family:'Pincel';src:url('https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/fonts/PermanentMarker.ttf') format('truetype');font-display:swap;}
 @keyframes pisca{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.1);}}
 *{margin:0;padding:0;box-sizing:border-box;}
+#desliga{position:fixed;inset:0;background:#000;z-index:99999;display:none;}
 html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:none;}
 body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 
@@ -59,6 +60,7 @@ body{background:linear-gradient(160deg,var(--azul),var(--azul-esc));}
 </style>
 </head>
 <body>
+<div id="desliga"></div>
 <div id="banner">
   <div class="logobox"><img src="https://raw.githubusercontent.com/Kevintorcato/tv-precos/main/assets/logo-wr.png" alt="WR"></div>
   <div class="faixa"></div>
@@ -129,7 +131,13 @@ function renderCena(){
 function virar(){if(totalCenas()<=1)return;cena=(cena+1)%totalCenas();renderCena();}
 function carregar(){xhrGet(CFG.server+"/tabela/produtos.php?cod_tv="+CFG.cod_tv,function(dados){montar(dados);if(!LINHAS.length){banner();return;}painel();paginar();if(cena>=totalCenas())cena=0;renderCena();},function(){banner();});}
 var tx=0;function rolarTicker(){var t=document.getElementById('ticker');tx-=1.3;if(Math.abs(tx)>t.scrollWidth/2)tx=0;t.style.transform="translateX("+tx+"px)";}
-banner();tickRelogio();carregar();
+/* liga/desliga a tela (fica preta) por horario. Pode vir do config.json (TV_CONFIG.horario) */
+var DEF_HOR={semana:{liga:"07:55",desliga:"19:20"},domingo:{liga:"07:55",desliga:"12:25"}};
+var HOR=(window.TV_CONFIG&&TV_CONFIG.horario)?TV_CONFIG.horario:DEF_HOR;
+function _m(s){var p=(s||"0:0").split(":");return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);}
+function checkHorario(){var d=new Date();var reg=(d.getDay()===0)?(HOR.domingo||DEF_HOR.domingo):(HOR.semana||DEF_HOR.semana);var ag=d.getHours()*60+d.getMinutes();var on=(ag>=_m(reg.liga)&&ag<_m(reg.desliga));document.getElementById('desliga').style.display=on?'none':'block';}
+banner();tickRelogio();carregar();checkHorario();
+setInterval(checkHorario,20000);
 setInterval(tickRelogio,1000);setInterval(carregar,CFG.refreshMs);setInterval(virar,CFG.pageMs);setInterval(rolarTicker,30);
 window.onresize=function(){if(LINHAS.length&&document.getElementById('painel').style.display!=='none'){paginar();renderCena();}};
 </script>
